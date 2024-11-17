@@ -1,3 +1,17 @@
-p {
-    color: red;
+/* Took some code to get styles started, will edit/remove as it fits my website moving forwared */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Add a wrapper for the table for better layout control */
+.table-container {
+    width: 100%;
+    overflow: hidden;  /* Contains the floated elements */
+    margin-bottom: 40px;
 }
