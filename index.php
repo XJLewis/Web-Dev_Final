@@ -10,7 +10,7 @@ if (!is_logged_in()) {
 }
 
 $host = 'localhost';
-$dbname = 'p3';
+$dbname = 'final';
 $user = 'xander';
 $pass = 'passwd';
 $charset = 'utf8mb4';
@@ -32,7 +32,7 @@ try {
 $search_results = null;
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_term = '%' . $_GET['search'] . '%';
-    $search_sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM bg3 WHERE name LIKE :search';
+    $search_sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM chars WHERE name LIKE :search';
     $search_stmt = $pdo->prepare($search_sql);
     $search_stmt->execute(['search' => $search_term]);
     $search_results = $search_stmt->fetchAll();
@@ -49,21 +49,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $ac = (int) $_POST['ac'];
         $is_alive = (int) $_POST['is_alive'];
         
-        $insert_sql = 'INSERT INTO bg3 (name, race, class, hp, ac, is_alive) VALUES (:name, :race, :class, :hp, :ac, :is_alive)';
+        $insert_sql = 'INSERT INTO chars (name, race, class, hp, ac, is_alive) VALUES (:name, :race, :class, :hp, :ac, :is_alive)';
         $stmt_insert = $pdo->prepare($insert_sql);
         $stmt_insert->execute(['name' => $name, 'race' => $race, 'class' => $class, 'hp' => $hp, 'ac' => $ac, 'is_alive' => $is_alive]);
     } elseif (isset($_POST['delete_id'])) {
         // Delete an entry
         $delete_id = (int) $_POST['delete_id'];
         
-        $delete_sql = 'DELETE FROM bg3 WHERE id = :id';
+        $delete_sql = 'DELETE FROM chars WHERE id = :id';
         $stmt_delete = $pdo->prepare($delete_sql);
         $stmt_delete->execute(['id' => $delete_id]);
     }
 }
 
 // Get all characters for main table
-$sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM bg3';
+$sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM chars';
 $stmt = $pdo->query($sql);
 ?>
 
