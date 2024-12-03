@@ -40,22 +40,22 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['name']) && isset($_POST['race']) && isset($_POST['class']) && isset($_POST['hp']) && isset($_POST['ac']) && isset($_POST['is_alive'])) {
+    if (isset($_POST['name']) && isset($_POST['race']) && isset($_POST['class']) && isset($_POST['hp']) && isset($_POST['ac'])) {
         // Insert new entry
         $name = htmlspecialchars($_POST['name']);
         $race = htmlspecialchars($_POST['race']);
         $class = htmlspecialchars($_POST['class']);
         $hp = (int) $_POST['hp'];
         $ac = (int) $_POST['ac'];
-        $is_alive = (int) $_POST['is_alive'];
-        
+        $is_alive = isset($_POST['is_alive']) ? 1 : 0;
+
         $insert_sql = 'INSERT INTO chars (name, race, class, hp, ac, is_alive) VALUES (:name, :race, :class, :hp, :ac, :is_alive)';
         $stmt_insert = $pdo->prepare($insert_sql);
         $stmt_insert->execute(['name' => $name, 'race' => $race, 'class' => $class, 'hp' => $hp, 'ac' => $ac, 'is_alive' => $is_alive]);
     } elseif (isset($_POST['delete_id'])) {
         // Delete an entry
         $delete_id = (int) $_POST['delete_id'];
-        
+
         $delete_sql = 'DELETE FROM chars WHERE id = :id';
         $stmt_delete = $pdo->prepare($delete_sql);
         $stmt_delete->execute(['id' => $delete_id]);
@@ -191,8 +191,8 @@ $stmt = $pdo->query($sql);
             <label for="ac">AC:</label>
             <input type="number" id="ac" name="ac" required>
             <br><br>
-            <label for="is_alive">Alive (1 for Yes, 0 for No):</label>
-            <input type="number" id="is_alive" name="is_alive" min="0" max="1" required>
+            <label for="is_alive">Alive:</label>
+            <input type="checkbox" id="is_alive" name="is_alive" value="1">
             <br><br>
             <input type="submit" value="Add Character">
         </form>
