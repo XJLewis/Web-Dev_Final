@@ -77,7 +77,7 @@ $stmt = $pdo->query($sql);
 <body>
     <!-- Hero Section -->
     <div class="hero-section">
-        <h1 class="hero-title">Baldur's Gate 3 Character Management</h1>
+        <h1 class="hero-title">Baldur's Gate 3 Party Management</h1>
         <p class="hero-subtitle">For all your adventuring needs</p>
         
         <!-- Search Section -->

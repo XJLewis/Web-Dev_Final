@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #0f0f0f ;
     color: #333;
     max-width: 1200px;
     margin: 0 auto;
@@ -104,7 +104,8 @@ h1, h2 {
 }
 
 .hero-section {
-    background-color: #fff;
+    background-image: url("bg3_bg.jpg");
+    background-size: cover;
     padding: 40px 20px;
     margin: -20px -20px 40px -20px; /* Negative margin to stretch full width */
     text-align: center;
@@ -113,22 +114,22 @@ h1, h2 {
 
 .hero-title {
     font-size: 2.5em;
-    color: #333;
+    color: #000000;
     margin-bottom: 15px;
 }
 
 .hero-subtitle {
     font-size: 1.2em;
-    color: #666;
+    color: #000000;
     margin-bottom: 30px;
     font-style: italic;
 }
 
 .hero-search {
-    max-width: 600px;
+    max-width: 600px;   
+    color: #000000;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
