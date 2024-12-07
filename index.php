@@ -96,7 +96,6 @@ $stmt = $pdo->query($sql);
                         <table>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Name</th>
                                     <th>Race</th>
                                     <th>Class</th>
@@ -109,7 +108,6 @@ $stmt = $pdo->query($sql);
                             <tbody>
                                 <?php foreach ($search_results as $row): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($row['id']); ?></td>
                                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                                     <td><?php echo htmlspecialchars($row['race']); ?></td>
                                     <td><?php echo htmlspecialchars($row['class']); ?></td>
@@ -140,7 +138,6 @@ $stmt = $pdo->query($sql);
         <table class="half-width-left-align">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Race</th>
                     <th>Class</th>
@@ -153,7 +150,6 @@ $stmt = $pdo->query($sql);
             <tbody>
                 <?php while ($row = $stmt->fetch()): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['race']); ?></td>
                     <td><?php echo htmlspecialchars($row['class']); ?></td>
@@ -172,28 +168,30 @@ $stmt = $pdo->query($sql);
         </table>
 
     <!-- Form Section -->
-        <h2>Add a New Character</h2>
-        <form action="index.php" method="post">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
-            <br><br>
-            <label for="race">Race:</label>
-            <input type="text" id="race" name="race" required>
-            <br><br>
-            <label for="class">Class:</label>
-            <input type="text" id="class" name="class" required>
-            <br><br>
-            <label for="hp">HP:</label>
-            <input type="number" id="hp" name="hp" required>
-            <br><br>
-            <label for="ac">AC:</label>
-            <input type="number" id="ac" name="ac" required>
-            <br><br>
-            <label for="is_alive">Alive:</label>
-            <input type="checkbox" id="is_alive" name="is_alive" value="1">
-            <br><br>
-            <input type="submit" value="Add Character">
-        </form>
+        <div class="form-container">
+            <h2>Add a New Character</h2>
+            <form action="index.php" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <br><br>
+                <label for="race">Race:</label>
+                <input type="text" id="race" name="race" required>
+                <br><br>
+                <label for="class">Class:</label>
+                <input type="text" id="class" name="class" required>
+                <br><br>
+                <label for="hp">HP:</label>
+                <input type="number" id="hp" name="hp" required>
+                <br><br>
+                <label for="ac">AC:</label>
+                <input type="number" id="ac" name="ac" required>
+                <br><br>
+                <label for="is_alive">Alive:</label>
+                <input type="checkbox" id="is_alive" name="is_alive" value="1">
+                <br><br>
+                <input type="submit" value="Add Character">
+            </form>
+        </div>
     </div>
 </body>
 </html>

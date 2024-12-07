@@ -3,7 +3,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #0f0f0f ;
-    color: #333;
+    color: #f0f0f0;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -27,27 +27,35 @@ th, td {
 }
 
 form {
-    width: 100%;
-    max-width: 500px;
-    margin-top: 20px;
+    width: 100%; /* Make the form take full width of the container */
+    max-width: 600px; /* Limit the maximum width for better design */
+    display: flex;
+    flex-direction: column;
 }
 
-label {
-    display: inline-block;
-    width: 70px;
+form label {
     margin-bottom: 5px;
 }
 
-input[type="text"] {
-    padding: 5px;
-    width: 200px;
+form input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-input[type="submit"] {
-    margin-top: 10px;
-    padding: 5px 15px;
+form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
     cursor: pointer;
+    padding: 10px;
 }
+
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
 
 h1, h2 {
     margin-bottom: 20px;
@@ -116,9 +124,20 @@ h1, h2 {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
 .central-container {
     padding: 40px 20px;
     margin: -20px -20px 40px -20px;
     text-align: center;
-    background-color: aliceblue;
+    background-color: #1b1f3b;
 }
