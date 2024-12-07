@@ -133,9 +133,9 @@ $stmt = $pdo->query($sql);
             <?php endif; ?>
         </div>
     </div>
-
+    
+    <div class="central-container">
     <!-- Table Section -->
-    <div class="table-container">
         <h2>All Characters in Database</h2>
         <table class="half-width-left-align">
             <thead>
@@ -170,10 +170,8 @@ $stmt = $pdo->query($sql);
                 <?php endwhile; ?>
             </tbody>
         </table>
-    </div>
 
     <!-- Form Section -->
-    <div class="form-container">
         <h2>Add a New Character</h2>
         <form action="index.php" method="post">
             <label for="name">Name:</label>
