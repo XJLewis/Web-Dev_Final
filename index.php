@@ -130,6 +130,10 @@ $stmt = $pdo->query($sql);
                 </div>
             <?php endif; ?>
         </div>
+        <!-- Button to go to about.html -->
+    <a href="about.html">
+        <button class="btn-about">About Us</button>
+    </a>
     </div>
     
     <div class="central-container">
