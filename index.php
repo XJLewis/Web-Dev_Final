@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require_once 'auth.php';
 
@@ -133,6 +132,8 @@ $stmt = $pdo->query($sql);
         <!-- Button to go to about.html -->
     <a href="about.html">
         <button class="btn-about">About Us</button>
+    <a href="inventory.php">
+        <button class="btn-about">Inventory</button>
     </a>
     </div>
     
