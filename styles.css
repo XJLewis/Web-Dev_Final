@@ -27,11 +27,6 @@ th, td {
     border-bottom: 1px solid #333; /* Darker border for contrast */
 }
 
-.half-width-left-align {
-    width: 50%;
-    float: none; /* Explicitly remove float */
-}
-
 /* Forms */
 form {
     width: 100%;
@@ -91,14 +86,6 @@ form input[type="submit"]:hover {
 }
 
 /* Search Section */
-.search-container {
-    margin-bottom: 40px;
-    padding: 20px;
-    background-color: #1b1f3b;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
 .search-form {
     display: flex;
     gap: 10px;
@@ -154,13 +141,17 @@ form input[type="submit"]:hover {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* Central Container */
 .central-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    background-color: #1b1f3b; 
     padding: 40px 20px;
-    margin: -20px -20px 40px -20px;
-    text-align: center;
-    background-color: #1b1f3b;
+    box-sizing: border-box;
 }
+
 
 /* Login Page Styles */
 .auth-container {
@@ -236,6 +227,19 @@ form input[type="submit"]:hover {
 
 .auth-container a:hover {
     text-decoration: underline;
+}
+
+.form-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+    max-width: 500px;
 }
 
 .error {

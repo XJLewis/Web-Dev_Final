@@ -138,8 +138,8 @@ $stmt = $pdo->query($sql);
     
     <div class="central-container">
     <!-- Table Section -->
-        <h2>All Characters in Database</h2>
-        <table class="half-width-left-align">
+        <h2>Your Party</h2>
+        <table>
             <thead>
                 <tr>
                     <th>Name</th>
