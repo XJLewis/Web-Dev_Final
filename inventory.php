@@ -70,6 +70,32 @@ try {
             <button type="submit">Search</button>
         </form>
 
+        <?php
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item'])) {
+            // Sanitize inputs
+            $character_id = (int) $_POST['character_id'];
+            $item_name = htmlspecialchars($_POST['item_name']);
+            $item_type = htmlspecialchars($_POST['item_type']);
+            $damage = !empty($_POST['damage']) ? htmlspecialchars($_POST['damage']) : null;
+            $armor_class = !empty($_POST['armor_class']) ? (int) $_POST['armor_class'] : null;
+            $camp_supply = !empty($_POST['camp_supply']) ? (int) $_POST['camp_supply'] : null;
+
+            // Insert into the database
+            $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply) 
+                        VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply)";
+            $stmt = $pdo->prepare($insert_sql);
+            $stmt->execute([
+                'character_id' => $character_id,
+                'item_name' => $item_name,
+                'item_type' => $item_type,
+                'damage' => $damage,
+                'armor_class' => $armor_class,
+                'camp_supply' => $camp_supply
+            ]);
+        }
+        ?>
+
+
         <!-- Inventory Table -->
         <?php if (!empty($characterName)): ?>
             <h2>Inventory for <?= htmlspecialchars($characterName) ?></h2>
@@ -113,6 +139,35 @@ try {
                 <p>No inventory found for <?= htmlspecialchars($characterName) ?>.</p>
             <?php endif; ?>
         <?php endif; ?>
+        
+        <h2>Add New Item</h2>
+        <form action="inventory.php" method="POST">
+            <label for="character_id">Character ID:</label>
+            <input type="number" name="character_id" id="character_id" required>
+
+            <label for="item_name">Item Name:</label>
+            <input type="text" name="item_name" id="item_name" required>
+
+            <label for="item_type">Item Type:</label>
+            <select name="item_type" id="item_type" required>
+                <option value="weapon">Weapon</option>
+                <option value="armor">Armor</option>
+                <option value="food">Camp Supply</option>
+                <option value="misc">Miscellaneous</option>
+            </select>
+
+            <label for="damage">Damage (for Weapons):</label>
+            <input type="text" name="damage" id="damage">
+
+            <label for="armor_class">Armor Class (for Armor):</label>
+            <input type="number" name="armor_class" id="armor_class">
+
+            <label for="camp_supply">Camp Supply Value (for Food):</label>
+            <input type="number" name="camp_supply" id="camp_supply">
+
+            <input type="submit" name="add_item" value="Add Item">
+        </form>
+
     </div>
 </body>
 </html>
