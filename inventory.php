@@ -156,6 +156,7 @@ try {
         <?php endif; ?>
 
         <!-- Add Item Form -->
+        <div class="form-container">
         <h2>Add New Item</h2>
         <form action="inventory.php" method="POST">
             <label for="character_id">Select Character:</label>
@@ -204,6 +205,7 @@ try {
 
             <input type="submit" name="add_item" value="Add Item">
         </form>
+    </div>
     </div>
 
     <script>
