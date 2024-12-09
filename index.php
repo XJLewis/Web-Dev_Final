@@ -58,12 +58,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $delete_sql = 'DELETE FROM chars WHERE id = :id';
         $stmt_delete = $pdo->prepare($delete_sql);
         $stmt_delete->execute(['id' => $delete_id]);
+    } elseif (isset($_POST['edit_id'])) {
+        // Update an entry
+        $edit_id = (int) $_POST['edit_id'];
+        $name = htmlspecialchars($_POST['edit_name']);
+        $race = htmlspecialchars($_POST['edit_race']);
+        $class = htmlspecialchars($_POST['edit_class']);
+        $hp = (int) $_POST['edit_hp'];
+        $ac = (int) $_POST['edit_ac'];
+        $is_alive = isset($_POST['edit_is_alive']) ? 1 : 0;
+
+        $update_sql = 'UPDATE chars SET name = :name, race = :race, class = :class, hp = :hp, ac = :ac, is_alive = :is_alive WHERE id = :id';
+        $stmt_update = $pdo->prepare($update_sql);
+        $stmt_update->execute(['name' => $name, 'race' => $race, 'class' => $class, 'hp' => $hp, 'ac' => $ac, 'is_alive' => $is_alive, 'id' => $edit_id]);
     }
 }
 
 // Get all characters for main table
 $sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM chars';
 $stmt = $pdo->query($sql);
+
+$edit_character = null;
+if (isset($_GET['edit_id'])) {
+    $edit_id = (int)$_GET['edit_id'];
+    $edit_stmt = $pdo->prepare('SELECT * FROM chars WHERE id = :id');
+    $edit_stmt->execute(['id' => $edit_id]);
+    $edit_character = $edit_stmt->fetch();
+}
 ?>
 
 <!DOCTYPE html>
@@ -78,67 +99,12 @@ $stmt = $pdo->query($sql);
     <div class="hero-section">
         <h1 class="hero-title">Baldur's Gate 3 Party Management</h1>
         <p class="hero-subtitle">For all your adventuring needs</p>
-        
-        <!-- Search Section -->
-        <div class="hero-search">
-            <h2>Search for a Character</h2>
-            <form action="" method="GET" class="search-form">
-                <label for="search">Search by Name:</label>
-                <input type="text" id="search" name="search" required>
-                <input type="submit" value="Search">
-            </form>
-            
-            <?php if (isset($_GET['search'])): ?>
-                <div class="search-results">
-                    <h3>Search Results</h3>
-                    <?php if ($search_results && count($search_results) > 0): ?>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Race</th>
-                                    <th>Class</th>
-                                    <th>HP</th>
-                                    <th>AC</th>
-                                    <th>Alive</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($search_results as $row): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['race']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['class']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['hp']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['ac']); ?></td>
-                                    <td><?php echo $row['is_alive'] ? 'Yes' : 'No'; ?></td>
-                                    <td>
-                                        <form action="index.php" method="post" style="display:inline;">
-                                            <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                                            <input type="submit" value="Delete">
-                                        </form>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php else: ?>
-                        <p>No characters found matching your search.</p>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-        </div>
-        <!-- Button to go to about.html -->
-    <a href="about.html">
-        <button class="btn-about">About Us</button>
-    <a href="inventory.php">
-        <button class="btn-about">Inventory</button>
-    </a>
+        <a href="about.html"><button class="btn-about">About Us</button></a>
+        <a href="inventory.php"><button class="btn-about">Inventory</button></a>
     </div>
     
-    <div class="central-container">
     <!-- Table Section -->
+    <div class="central-container">
         <h2>Your Party</h2>
         <table>
             <thead>
@@ -166,37 +132,27 @@ $stmt = $pdo->query($sql);
                             <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
                             <input type="submit" value="Delete">
                         </form>
+                        <a href="?edit_id=<?php echo $row['id']; ?>">Edit</a>
                     </td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
 
-    <!-- Form Section -->
-        <div class="form-container">
-            <h2>Add a New Character</h2>
+        <!-- Edit Form -->
+        <?php if ($edit_character): ?>
+            <h2>Edit Character</h2>
             <form action="index.php" method="post">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-                <br><br>
-                <label for="race">Race:</label>
-                <input type="text" id="race" name="race" required>
-                <br><br>
-                <label for="class">Class:</label>
-                <input type="text" id="class" name="class" required>
-                <br><br>
-                <label for="hp">HP:</label>
-                <input type="number" id="hp" name="hp" required>
-                <br><br>
-                <label for="ac">AC:</label>
-                <input type="number" id="ac" name="ac" required>
-                <br><br>
-                <label for="is_alive">Alive:</label>
-                <input type="checkbox" id="is_alive" name="is_alive" value="1">
-                <br><br>
-                <input type="submit" value="Add Character">
+                <input type="hidden" name="edit_id" value="<?php echo $edit_character['id']; ?>">
+                <label>Name: <input type="text" name="edit_name" value="<?php echo htmlspecialchars($edit_character['name']); ?>" required></label><br>
+                <label>Race: <input type="text" name="edit_race" value="<?php echo htmlspecialchars($edit_character['race']); ?>" required></label><br>
+                <label>Class: <input type="text" name="edit_class" value="<?php echo htmlspecialchars($edit_character['class']); ?>" required></label><br>
+                <label>HP: <input type="number" name="edit_hp" value="<?php echo $edit_character['hp']; ?>" required></label><br>
+                <label>AC: <input type="number" name="edit_ac" value="<?php echo $edit_character['ac']; ?>" required></label><br>
+                <label>Alive: <input type="checkbox" name="edit_is_alive" <?php echo $edit_character['is_alive'] ? 'checked' : ''; ?>></label><br>
+                <input type="submit" value="Update Character">
             </form>
-        </div>
+        <?php endif; ?>
     </div>
 </body>
 </html>
