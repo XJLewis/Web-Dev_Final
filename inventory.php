@@ -1,4 +1,4 @@
-<?php
+<?php 
 $host = 'localhost';
 $dbname = 'final';
 $user = 'xander';
@@ -177,28 +177,8 @@ try {
                 <option value="Weapon">Weapon</option>
                 <option value="Armor">Armor</option>
                 <option value="Food">Camp Supply</option>
-                <option value="Misc">Miscellaneous</option>
+                <option value="Other">Other</option>
             </select>
-
-            <div id="damage-field" class="item-field" style="display:none;">
-                <label for="damage">Damage:</label>
-                <input type="text" name="damage" id="damage">
-            </div>
-
-            <div id="armor_class-field" class="item-field" style="display:none;">
-                <label for="armor_class">Armor Class:</label>
-                <input type="number" name="armor_class" id="armor_class">
-            </div>
-
-            <div id="camp_supply-field" class="item-field" style="display:none;">
-                <label for="camp_supply">Camp Supply Value:</label>
-                <input type="number" name="camp_supply" id="camp_supply">
-            </div>
-
-            <div id="equipped-field" class="item-field" style="display:none;">
-                <label for="equipped">Equipped:</label>
-                <input type="checkbox" name="equipped" id="equipped">
-            </div>
 
             <label for="description">Description:</label>
             <textarea name="description" id="description"></textarea>
@@ -207,32 +187,5 @@ try {
         </form>
     </div>
     </div>
-
-    <script>
-        function toggleItemFields() {
-            // Get the selected item type
-            var itemType = document.getElementById("item_type").value;
-
-            // Reset all fields to hidden
-            document.getElementById("damage-field").style.display = "none";
-            document.getElementById("armor_class-field").style.display = "none";
-            document.getElementById("camp_supply-field").style.display = "none";
-            document.getElementById("equipped-field").style.display = "none";
-
-            // Show relevant fields based on the selected item type
-            if (itemType === "Weapon") {
-                document.getElementById("damage-field").style.display = "block";
-                document.getElementById("equipped-field").style.display = "block";
-            } else if (itemType === "Armor") {
-                document.getElementById("armor_class-field").style.display = "block";
-                document.getElementById("equipped-field").style.display = "block";
-            } else if (itemType === "Food") {
-                document.getElementById("camp_supply-field").style.display = "block";
-            }
-        }
-
-        // Call toggleItemFields when the page loads to adjust visibility of fields
-        window.onload = toggleItemFields;
-    </script>
 </body>
 </html>
