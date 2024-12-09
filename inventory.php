@@ -13,42 +13,50 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    // Connect to the database
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Fetch list of characters for dropdowns
     $characters_sql = "SELECT id, name FROM chars";
     $characters_stmt = $pdo->query($characters_sql);
-    $characters = $characters_stmt->fetchAll();
+    $characters = $characters_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Initialize variables
     $characterId = '';
     $inventory = [];
 
-    // Fetch inventory for a character
+    // Check if a search was submitted
     if (isset($_GET['character_id']) && !empty($_GET['character_id'])) {
         $characterId = (int)$_GET['character_id'];
-        $sql = "SELECT i.item_name, i.item_type, i.damage, i.armor_class, i.camp_supply, i.quantity, i.description
+
+        // SQL query to fetch character inventory
+        $sql = "SELECT i.item_name, i.item_type, i.damage, i.armor_class, i.camp_supply, i.quantity, i.description, i.equipped
                 FROM inventory i
                 JOIN chars c ON i.character_id = c.id
                 WHERE c.id = :characterId";
+
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':characterId', $characterId);
         $stmt->execute();
-        $inventory = $stmt->fetchAll();
+
+        $inventory = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Handle adding a new item
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item'])) {
-        $character_id = (int)$_POST['character_id'];
+        // Sanitize inputs
+        $character_id = (int) $_POST['character_id'];
         $item_name = htmlspecialchars($_POST['item_name']);
         $item_type = htmlspecialchars($_POST['item_type']);
-        $damage = ($item_type === 'Weapon') ? htmlspecialchars($_POST['damage']) : null;
-        $armor_class = ($item_type === 'Armor') ? (int)$_POST['armor_class'] : null;
-        $camp_supply = ($item_type === 'Food') ? (int)$_POST['camp_supply'] : null;
-        $description = htmlspecialchars($_POST['description']);
+        $damage = !empty($_POST['damage']) ? htmlspecialchars($_POST['damage']) : null;
+        $armor_class = !empty($_POST['armor_class']) ? (int) $_POST['armor_class'] : null;
+        $camp_supply = !empty($_POST['camp_supply']) ? (int) $_POST['camp_supply'] : null;
+        $equipped = isset($_POST['equipped']) ? 1 : 0; // Set equipped flag if checkbox is checked
 
-        $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply, description) 
-                       VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply, :description)";
+        // Insert into the database
+        $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply, equipped, description) 
+                    VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply, :equipped, :description)";
         $stmt = $pdo->prepare($insert_sql);
         $stmt->execute([
             'character_id' => $character_id,
@@ -57,7 +65,8 @@ try {
             'damage' => $damage,
             'armor_class' => $armor_class,
             'camp_supply' => $camp_supply,
-            'description' => $description
+            'equipped' => $equipped,
+            'description' => htmlspecialchars($_POST['description'])  // Sanitize description
         ]);
     }
 } catch (PDOException $e) {
@@ -72,25 +81,20 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
     <link rel="stylesheet" href="styles.css">
-    <script>
-        function toggleFields() {
-            const itemType = document.getElementById("item_type").value;
-            document.getElementById("damage_field").style.display = (itemType === "Weapon") ? "block" : "none";
-            document.getElementById("armor_class_field").style.display = (itemType === "Armor") ? "block" : "none";
-            document.getElementById("camp_supply_field").style.display = (itemType === "Food") ? "block" : "none";
-        }
-        window.onload = toggleFields;
-    </script>
 </head>
 <body>
     <div class="hero-section">
         <h1>Inventory Management</h1>
-        <a href="index.php"><button class="btn-about">Home Page</button></a>
-        <a href="about.html"><button class="btn-about">About Us</button></a>
+        <a href="index.php">
+            <button class="btn-about">Home Page</button>
+        </a>
+        <a href="about.html">
+            <button class="btn-about">About Us</button>
+        </a>
     </div>
 
     <div class="central-container">
-        <!-- Search Inventory -->
+        <!-- Search Form -->
         <h2>Search Inventory by Character</h2>
         <form method="get" action="inventory.php" class="search-form">
             <label for="character_id">Select Character:</label>
@@ -105,6 +109,7 @@ try {
             <button type="submit">Search</button>
         </form>
 
+        <!-- Inventory Table -->
         <?php if (!empty($characterId)): ?>
             <h2>Inventory</h2>
             <?php if ($inventory): ?>
@@ -116,14 +121,15 @@ try {
                             <th>Quantity</th>
                             <th>Details</th>
                             <th>Description</th>
+                            <th>Equipped</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($inventory as $item): ?>
                             <tr>
-                                <td><?= htmlspecialchars($item['item_name']); ?></td>
-                                <td><?= htmlspecialchars($item['item_type']); ?></td>
-                                <td><?= htmlspecialchars($item['quantity']); ?></td>
+                                <td><?= htmlspecialchars($item['item_name']) ?></td>
+                                <td><?= htmlspecialchars($item['item_type']) ?></td>
+                                <td><?= htmlspecialchars($item['quantity']) ?></td>
                                 <td>
                                     <?php
                                     if ($item['item_type'] === 'Weapon' && !empty($item['damage'])) {
@@ -137,7 +143,8 @@ try {
                                     }
                                     ?>
                                 </td>
-                                <td><?= htmlspecialchars($item['description']); ?></td>
+                                <td><?= htmlspecialchars($item['description']) ?></td>
+                                <td><?= $item['equipped'] ? 'Yes' : 'No' ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -147,14 +154,16 @@ try {
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Add New Item -->
+        <!-- Add Item Form -->
         <h2>Add New Item</h2>
         <form action="inventory.php" method="POST">
             <label for="character_id">Select Character:</label>
             <select name="character_id" id="character_id" required>
                 <option value="">-- Select a Character --</option>
                 <?php foreach ($characters as $character): ?>
-                    <option value="<?= $character['id']; ?>"><?= htmlspecialchars($character['name']); ?></option>
+                    <option value="<?= $character['id']; ?>">
+                        <?= htmlspecialchars($character['name']); ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
 
@@ -162,33 +171,65 @@ try {
             <input type="text" name="item_name" id="item_name" required>
 
             <label for="item_type">Item Type:</label>
-            <select name="item_type" id="item_type" onchange="toggleFields()" required>
+            <select name="item_type" id="item_type" required onchange="toggleItemFields()">
                 <option value="Weapon">Weapon</option>
                 <option value="Armor">Armor</option>
                 <option value="Food">Camp Supply</option>
-                <option value="Other">Other</option>
+                <option value="Misc">Miscellaneous</option>
             </select>
 
-            <div id="damage_field" style="display:none;">
+            <div id="damage-field" class="item-field" style="display:none;">
                 <label for="damage">Damage:</label>
                 <input type="text" name="damage" id="damage">
             </div>
 
-            <div id="armor_class_field" style="display:none;">
+            <div id="armor_class-field" class="item-field" style="display:none;">
                 <label for="armor_class">Armor Class:</label>
                 <input type="number" name="armor_class" id="armor_class">
             </div>
 
-            <div id="camp_supply_field" style="display:none;">
+            <div id="camp_supply-field" class="item-field" style="display:none;">
                 <label for="camp_supply">Camp Supply Value:</label>
                 <input type="number" name="camp_supply" id="camp_supply">
             </div>
 
+            <div id="equipped-field" class="item-field" style="display:none;">
+                <label for="equipped">Equipped:</label>
+                <input type="checkbox" name="equipped" id="equipped">
+            </div>
+
             <label for="description">Description:</label>
-            <textarea name="description" id="description" rows="1" required></textarea>
+            <textarea name="description" id="description"></textarea>
 
             <input type="submit" name="add_item" value="Add Item">
         </form>
     </div>
+
+    <script>
+        function toggleItemFields() {
+            // Get the selected item type
+            var itemType = document.getElementById("item_type").value;
+
+            // Reset all fields to hidden
+            document.getElementById("damage-field").style.display = "none";
+            document.getElementById("armor_class-field").style.display = "none";
+            document.getElementById("camp_supply-field").style.display = "none";
+            document.getElementById("equipped-field").style.display = "none";
+
+            // Show relevant fields based on the selected item type
+            if (itemType === "Weapon") {
+                document.getElementById("damage-field").style.display = "block";
+                document.getElementById("equipped-field").style.display = "block";
+            } else if (itemType === "Armor") {
+                document.getElementById("armor_class-field").style.display = "block";
+                document.getElementById("equipped-field").style.display = "block";
+            } else if (itemType === "Food") {
+                document.getElementById("camp_supply-field").style.display = "block";
+            }
+        }
+
+        // Call toggleItemFields when the page loads to adjust visibility of fields
+        window.onload = toggleItemFields;
+    </script>
 </body>
 </html>
