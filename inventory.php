@@ -13,49 +13,41 @@ $options = [
 ];
 
 try {
-    // Connect to the database
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 
     // Fetch list of characters for dropdowns
     $characters_sql = "SELECT id, name FROM chars";
     $characters_stmt = $pdo->query($characters_sql);
-    $characters = $characters_stmt->fetchAll(PDO::FETCH_ASSOC);
+    $characters = $characters_stmt->fetchAll();
 
     // Initialize variables
     $characterId = '';
     $inventory = [];
 
-    // Check if a search was submitted
+    // Fetch inventory for a character
     if (isset($_GET['character_id']) && !empty($_GET['character_id'])) {
         $characterId = (int)$_GET['character_id'];
-
-        // SQL query to fetch character inventory
         $sql = "SELECT i.item_name, i.item_type, i.damage, i.armor_class, i.camp_supply, i.quantity, i.description
                 FROM inventory i
                 JOIN chars c ON i.character_id = c.id
                 WHERE c.id = :characterId";
-
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':characterId', $characterId);
         $stmt->execute();
-
-        $inventory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $inventory = $stmt->fetchAll();
     }
 
     // Handle adding a new item
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item'])) {
-        // Sanitize inputs
-        $character_id = (int) $_POST['character_id'];
+        $character_id = (int)$_POST['character_id'];
         $item_name = htmlspecialchars($_POST['item_name']);
         $item_type = htmlspecialchars($_POST['item_type']);
-        $damage = !empty($_POST['damage']) ? htmlspecialchars($_POST['damage']) : null;
-        $armor_class = !empty($_POST['armor_class']) ? (int) $_POST['armor_class'] : null;
-        $camp_supply = !empty($_POST['camp_supply']) ? (int) $_POST['camp_supply'] : null;
+        $damage = ($item_type === 'Weapon') ? htmlspecialchars($_POST['damage']) : null;
+        $armor_class = ($item_type === 'Armor') ? (int)$_POST['armor_class'] : null;
+        $camp_supply = ($item_type === 'Food') ? (int)$_POST['camp_supply'] : null;
 
-        // Insert into the database
         $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply) 
-                    VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply)";
+                       VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply)";
         $stmt = $pdo->prepare($insert_sql);
         $stmt->execute([
             'character_id' => $character_id,
@@ -78,21 +70,25 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        function toggleFields() {
+            const itemType = document.getElementById("item_type").value;
+            document.getElementById("damage_field").style.display = (itemType === "Weapon") ? "block" : "none";
+            document.getElementById("armor_class_field").style.display = (itemType === "Armor") ? "block" : "none";
+            document.getElementById("camp_supply_field").style.display = (itemType === "Food") ? "block" : "none";
+        }
+        window.onload = toggleFields;
+    </script>
 </head>
 <body>
     <div class="hero-section">
         <h1>Inventory Management</h1>
-        <a href="index.php">
-            <button class="btn-about">Home Page</button>
-        </a>
-        <a href="about.html">
-            <button class="btn-about">About Us</button>
-        </a>
+        <a href="index.php"><button class="btn-about">Home Page</button></a>
+        <a href="about.html"><button class="btn-about">About Us</button></a>
     </div>
 
     <div class="central-container">
-        <h1>Inventory Management</h1>
-        <!-- Search Form -->
+        <!-- Search Inventory -->
         <h2>Search Inventory by Character</h2>
         <form method="get" action="inventory.php" class="search-form">
             <label for="character_id">Select Character:</label>
@@ -107,7 +103,6 @@ try {
             <button type="submit">Search</button>
         </form>
 
-        <!-- Inventory Table -->
         <?php if (!empty($characterId)): ?>
             <h2>Inventory</h2>
             <?php if ($inventory): ?>
@@ -124,9 +119,9 @@ try {
                     <tbody>
                         <?php foreach ($inventory as $item): ?>
                             <tr>
-                                <td><?= htmlspecialchars($item['item_name']) ?></td>
-                                <td><?= htmlspecialchars($item['item_type']) ?></td>
-                                <td><?= htmlspecialchars($item['quantity']) ?></td>
+                                <td><?= htmlspecialchars($item['item_name']); ?></td>
+                                <td><?= htmlspecialchars($item['item_type']); ?></td>
+                                <td><?= htmlspecialchars($item['quantity']); ?></td>
                                 <td>
                                     <?php
                                     if ($item['item_type'] === 'Weapon' && !empty($item['damage'])) {
@@ -140,7 +135,7 @@ try {
                                     }
                                     ?>
                                 </td>
-                                <td><?= htmlspecialchars($item['description']) ?></td>
+                                <td><?= htmlspecialchars($item['description']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -150,16 +145,14 @@ try {
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Add Item Form -->
+        <!-- Add New Item -->
         <h2>Add New Item</h2>
         <form action="inventory.php" method="POST">
             <label for="character_id">Select Character:</label>
             <select name="character_id" id="character_id" required>
                 <option value="">-- Select a Character --</option>
                 <?php foreach ($characters as $character): ?>
-                    <option value="<?= $character['id']; ?>">
-                        <?= htmlspecialchars($character['name']); ?>
-                    </option>
+                    <option value="<?= $character['id']; ?>"><?= htmlspecialchars($character['name']); ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -167,21 +160,27 @@ try {
             <input type="text" name="item_name" id="item_name" required>
 
             <label for="item_type">Item Type:</label>
-            <select name="item_type" id="item_type" required>
+            <select name="item_type" id="item_type" onchange="toggleFields()" required>
                 <option value="Weapon">Weapon</option>
                 <option value="Armor">Armor</option>
                 <option value="Food">Camp Supply</option>
-                <option value="Misc">Miscellaneous</option>
+                <option value="Other">Other</option>
             </select>
 
-            <label for="damage">Damage (for Weapons):</label>
-            <input type="text" name="damage" id="damage">
+            <div id="damage_field" style="display:none;">
+                <label for="damage">Damage:</label>
+                <input type="number" name="damage" id="damage">
+            </div>
 
-            <label for="armor_class">Armor Class (for Armor):</label>
-            <input type="number" name="armor_class" id="armor_class">
+            <div id="armor_class_field" style="display:none;">
+                <label for="armor_class">Armor Class:</label>
+                <input type="number" name="armor_class" id="armor_class">
+            </div>
 
-            <label for="camp_supply">Camp Supply Value (for Food):</label>
-            <input type="number" name="camp_supply" id="camp_supply">
+            <div id="camp_supply_field" style="display:none;">
+                <label for="camp_supply">Camp Supply Value:</label>
+                <input type="number" name="camp_supply" id="camp_supply">
+            </div>
 
             <input type="submit" name="add_item" value="Add Item">
         </form>
