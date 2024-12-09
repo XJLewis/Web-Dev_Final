@@ -45,9 +45,10 @@ try {
         $damage = ($item_type === 'Weapon') ? htmlspecialchars($_POST['damage']) : null;
         $armor_class = ($item_type === 'Armor') ? (int)$_POST['armor_class'] : null;
         $camp_supply = ($item_type === 'Food') ? (int)$_POST['camp_supply'] : null;
+        $description = htmlspecialchars($_POST['description']);
 
-        $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply) 
-                       VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply)";
+        $insert_sql = "INSERT INTO inventory (character_id, item_name, item_type, damage, armor_class, camp_supply, description) 
+                       VALUES (:character_id, :item_name, :item_type, :damage, :armor_class, :camp_supply, :description)";
         $stmt = $pdo->prepare($insert_sql);
         $stmt->execute([
             'character_id' => $character_id,
@@ -55,7 +56,8 @@ try {
             'item_type' => $item_type,
             'damage' => $damage,
             'armor_class' => $armor_class,
-            'camp_supply' => $camp_supply
+            'camp_supply' => $camp_supply,
+            'description' => $description
         ]);
     }
 } catch (PDOException $e) {
@@ -169,7 +171,7 @@ try {
 
             <div id="damage_field" style="display:none;">
                 <label for="damage">Damage:</label>
-                <input type="number" name="damage" id="damage">
+                <input type="text" name="damage" id="damage">
             </div>
 
             <div id="armor_class_field" style="display:none;">
@@ -181,6 +183,9 @@ try {
                 <label for="camp_supply">Camp Supply Value:</label>
                 <input type="number" name="camp_supply" id="camp_supply">
             </div>
+
+            <label for="description">Description:</label>
+            <textarea name="description" id="description" rows="1" required></textarea>
 
             <input type="submit" name="add_item" value="Add Item">
         </form>
