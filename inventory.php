@@ -69,9 +69,31 @@ try {
             'description' => htmlspecialchars($_POST['description'])  // Sanitize description
         ]);
     }
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+
+    // Handle deleting an item
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item'])) {
+    // Sanitize inputs
+    $character_id = (int) $_POST['character_id'];
+    $item_name = htmlspecialchars($_POST['item_name']);
+
+    // SQL query to delete the item
+    $delete_sql = "DELETE FROM inventory WHERE character_id = :character_id AND item_name = :item_name LIMIT 1";
+    $stmt = $pdo->prepare($delete_sql);
+
+    try {
+        $stmt->execute([
+            'character_id' => $character_id,
+            'item_name' => $item_name
+        ]);
+        echo "<p>Item successfully deleted!</p>";
+    } catch (PDOException $e) {
+        echo "Error deleting item: " . $e->getMessage();
+    }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -123,6 +145,7 @@ try {
                             <th>Details</th>
                             <th>Description</th>
                             <th>Equipped</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -146,9 +169,20 @@ try {
                                 </td>
                                 <td><?= htmlspecialchars($item['description']) ?></td>
                                 <td><?= $item['equipped'] ? 'Yes' : 'No' ?></td>
+                                <td>
+                                    <!-- Delete Button Form -->
+                                    <form action="inventory.php" method="post" style="display:inline;">
+                                        <input type="hidden" name="delete_item" value="1">
+                                        <input type="hidden" name="item_name" value="<?= htmlspecialchars($item['item_name']) ?>">
+                                        <input type="hidden" name="character_id" value="<?= $characterId ?>">
+                                        <input type="submit" value="Delete">
+                                    </form>
+
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
+
                 </table>
             <?php else: ?>
                 <p>No inventory found for the selected character.</p>
