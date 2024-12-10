@@ -188,3 +188,7 @@ form input[type="submit"]:hover {
 .btn-about:hover {
     background-color: #0056b3;
 }
+
+hr {
+    color: white
+}

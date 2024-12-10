@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item'])) {
 <body>
     <div class="hero-section">
         <h1 class="hero-title">Inventory Management</h1>
-        <h2 class="hero-subtitle">Add to and browse your party's inventory</h2>
+        <h2 class="hero-subtitle">Edit and browse your party's inventory</h2>
         <a href="index.php">
             <button class="btn-about">Home Page</button>
         </a>
