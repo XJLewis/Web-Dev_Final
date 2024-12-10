@@ -177,7 +177,7 @@ try {
                 <option value="Weapon">Weapon</option>
                 <option value="Armor">Armor</option>
                 <option value="Food">Camp Supply</option>
-                <option value="Misc">Miscellaneous</option>
+                <option value="Other">Miscellaneous</option>
             </select>
 
             <div id="damage-field" class="item-field" style="display:none;">
