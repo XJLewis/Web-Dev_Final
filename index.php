@@ -27,16 +27,6 @@ try {
     throw new PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-// Handle character search
-$search_results = null;
-if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $search_term = '%' . $_GET['search'] . '%';
-    $search_sql = 'SELECT id, name, race, class, hp, ac, is_alive FROM chars WHERE name LIKE :search';
-    $search_stmt = $pdo->prepare($search_sql);
-    $search_stmt->execute(['search' => $search_term]);
-    $search_results = $search_stmt->fetchAll();
-}
-
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['name']) && isset($_POST['race']) && isset($_POST['class']) && isset($_POST['hp']) && isset($_POST['ac'])) {
