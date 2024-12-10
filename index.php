@@ -78,57 +78,7 @@ $stmt = $pdo->query($sql);
     <div class="hero-section">
         <h1 class="hero-title">Baldur's Gate 3 Party Management</h1>
         <p class="hero-subtitle">For all your adventuring needs</p>
-        
-        <!-- Search Section -->
-        <div class="hero-search">
-            <h2>Search for a Character</h2>
-            <form action="" method="GET" class="search-form">
-                <label for="search">Search by Name:</label>
-                <input type="text" id="search" name="search" required>
-                <input type="submit" value="Search">
-            </form>
-            
-            <?php if (isset($_GET['search'])): ?>
-                <div class="search-results">
-                    <h3>Search Results</h3>
-                    <?php if ($search_results && count($search_results) > 0): ?>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Race</th>
-                                    <th>Class</th>
-                                    <th>HP</th>
-                                    <th>AC</th>
-                                    <th>Alive</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($search_results as $row): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['race']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['class']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['hp']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['ac']); ?></td>
-                                    <td><?php echo $row['is_alive'] ? 'Yes' : 'No'; ?></td>
-                                    <td>
-                                        <form action="index.php" method="post" style="display:inline;">
-                                            <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>">
-                                            <input type="submit" value="Delete">
-                                        </form>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php else: ?>
-                        <p>No characters found matching your search.</p>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-        </div>
+    
         <!-- Button to go to about.html -->
     <a href="about.html">
         <button class="btn-about">About Us</button>
