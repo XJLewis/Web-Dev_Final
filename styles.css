@@ -188,15 +188,3 @@ form input[type="submit"]:hover {
 .btn-about:hover {
     background-color: #0056b3;
 }
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .search-form {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    table, th, td {
-        font-size: 12px;
-    }
-}
