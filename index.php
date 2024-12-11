@@ -109,7 +109,7 @@ $edit_row_id = isset($_POST['row_id']) ? (int)$_POST['row_id'] : null;
                 <?php while ($row = $stmt->fetch()): ?>
                     <tr>
                         <?php if ($edit_row_id === $row['id']): ?>
-                            <!-- Edit mode -->
+                            <!-- Edit mode, GPT helped heavily -->
                             <form method="post" action="index.php">
                                 <input type="hidden" name="edit_id" value="<?php echo $row['id']; ?>">
                                 <td><input type="text" name="name" value="<?php echo htmlspecialchars($row['name']); ?>" required></td>
