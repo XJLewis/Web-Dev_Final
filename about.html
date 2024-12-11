@@ -11,6 +11,7 @@
         <p class="hero-subtitle">Why use this site?</p>
         <a href="index.php">
             <button class="btn-about">Home Page</button>
+        </a>
         <a href="inventory.php">
             <button class="btn-about">Inventory</button>
         </a>
@@ -49,6 +50,22 @@
         <p style="text-align: center;">
             Have any questions or feedback? Reach out at lewisx09@mycu.concord.edu
         </p>
+
+        <!-- Feedback Form -->
+        <hr>
+        <h2 style="text-align: center;">Send Us Feedback</h2>
+        <form action="process_feedback.php" method="POST" style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <label for="name">Your Name:</label><br>
+            <input type="text" id="name" name="name" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+            
+            <label for="email">Your Email:</label><br>
+            <input type="email" id="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+            
+            <label for="feedback">Your Feedback:</label><br>
+            <textarea id="feedback" name="feedback" rows="5" required style="width: 100%; padding: 8px; margin-bottom: 10px;"></textarea><br>
+            
+            <button type="submit" style="padding: 10px 20px; font-size: 16px;">Submit Feedback</button>
+        </form>
     </div>
 </body>
 </html>
